@@ -389,7 +389,7 @@
     </div>
     <div class="step-body">
       <ol>
-        <li><a href="https://incredible-curiosity-production-2d39.up.railway.app/slack/install" target="_blank" style="color: var(--brown); font-weight: 600;">Click here to connect Slack</a> — you'll be taken to Slack to authorise Kiki</li>
+        <li><a id="slack-install-link" href="#" target="_blank" style="color: var(--brown); font-weight: 600;">Click here to connect Slack</a> — you'll be taken to Slack to authorise Kiki</li>
         <li>Find <strong>Slack</strong> and click <strong>Connect</strong></li>
         <li>Sign in to your Slack workspace and authorise Kiki</li>
         <li>You'll be redirected back to Kiki once connected</li>
@@ -494,6 +494,12 @@
 
 <script>
   const totalSteps = 4;
+
+  // Set Slack install link with locationId from URL
+  const params = new URLSearchParams(window.location.search);
+  const locationId = params.get('locationId') || '';
+  document.getElementById('slack-install-link').href =
+    'https://app.wearekiki.com/slack/install?locationId=' + encodeURIComponent(locationId);
 
   function toggleStep(id) {
     const step = document.getElementById(id);
