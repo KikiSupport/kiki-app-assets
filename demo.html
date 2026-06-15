@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiki — Product Walkthrough</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#532822;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;}
+
+#stage{
+  position:relative;width:1100px;height:720px;
+  border-radius:16px;
+  box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.25);
+  overflow:hidden;flex-shrink:0;transform-origin:0 0;
+}
+
+.sc{position:absolute;inset:0;display:none;overflow:hidden;}
+.sc.on{display:flex;}
+
+/* Cursor */
+#cur{position:absolute;z-index:9999;pointer-events:none;
+  transition:left .55s cubic-bezier(.4,0,.2,1),top .55s cubic-bezier(.4,0,.2,1);
+  will-change:left,top;}
+#cur.fast{transition-duration:.22s;}
+#cur.slow{transition-duration:1s;}
+.rip{position:absolute;border-radius:50%;pointer-events:none;
+  background:rgba(255,255,255,.38);transform:scale(0);
+  animation:ripOut .5s ease-out forwards;z-index:9998;}
+@keyframes ripOut{to{transform:scale(6);opacity:0;}}
+
+/* Caption */
+#cap{position:absolute;bottom:20px;left:24px;color:#FFF2E9;
+  font-size:13px;font-weight:500;z-index:9996;letter-spacing:.01em;
+  opacity:0;transition:opacity .45s ease;max-width:500px;line-height:1.55;
+  text-shadow:0 1px 6px rgba(0,0,0,.45);}
+#cap.on{opacity:1;}
+
+/* Fade */
+#fade{position:absolute;inset:0;background:#000;z-index:9990;
+  opacity:1;pointer-events:none;transition:none;}
+#fade.on{opacity:1;}
+#fade.live{transition:opacity .55s ease;}
+
+/* ═══ SCENE 1 — BRIEFING ═══ */
+#s1{background:#FFF2E9;flex-direction:column;align-items:center;justify-content:center;gap:0;}
+.b-greet{font-size:36px;font-weight:700;color:#532822;letter-spacing:-.5px;margin-bottom:32px;
+  opacity:0;animation:fuD .5s ease .2s forwards;}
+.b-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:600px;margin-bottom:32px;}
+.b-card{border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  opacity:0;transform:translateY(14px);
+  transition:box-shadow .2s,transform .15s;}
+.b-card:nth-child(1){animation:cIn .45s ease .45s forwards;}
+.b-card:nth-child(2){animation:cIn .45s ease .65s forwards;}
+.b-card:nth-child(3){animation:cIn .45s ease .85s forwards;}
+.b-card:nth-child(4){animation:cIn .45s ease 1.05s forwards;}
+.b-card.hov{box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(-3px)!important;}
+.b-bg{position:absolute;right:-18px;bottom:-18px;width:80px;height:80px;border-radius:50%;opacity:.15;}
+.b-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;opacity:.75;}
+.b-num{font-size:34px;font-weight:700;line-height:1;margin-bottom:5px;}
+.b-row{font-size:12px;opacity:.8;margin-top:2px;}
+#bz{position:absolute;inset:0;background:#FFF2E9;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;opacity:0;transition:opacity .5s ease;}
+#bz.on{opacity:1;}
+#bz-card{border-radius:20px;padding:28px 34px;width:400px;position:relative;overflow:hidden;
+  background:#0084C5;color:#FFF2E9;
+  transition:transform 1.6s cubic-bezier(.1,0,.1,1);transform:scale(.8);}
+#bz.on #bz-card{transform:scale(1.18);}
+#bz-bg{position:absolute;right:-22px;bottom:-22px;width:110px;height:110px;border-radius:50%;background:#FFF2E9;opacity:.12;}
+#bz-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.7;margin-bottom:10px;}
+#bz-num{font-size:56px;font-weight:700;line-height:1;margin-bottom:4px;}
+#bz-sub{font-size:14px;opacity:.72;}
+@keyframes fuD{to{opacity:1;transform:translateY(0);}}
+@keyframes cIn{to{opacity:1;transform:translateY(0);}}
+
+/* ═══ SCENE 2-3 — MESSAGES ═══ */
+#s-msgs{background:#FFF2E9;flex-direction:row;}
+.ml{width:250px;min-width:250px;background:#fff;border-right:.5px solid #f0e8e4;
+  display:flex;flex-direction:column;overflow:hidden;}
+.ml-hdr{padding:16px 18px 10px;}
+.ml-title{font-size:30px;font-weight:700;color:#532822;}
+.ml-search{margin:0 14px 10px;display:flex;align-items:center;gap:7px;
+  background:#fff;border:.5px solid #f0e8e4;border-radius:10px;padding:7px 11px;}
+.ml-search input{border:none;background:none;outline:none;font-size:13px;color:#532822;width:100%;font-family:inherit;}
+.conv-list{flex:1;overflow-y:auto;}
+.ci{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:.5px solid #f5ece8;cursor:pointer;transition:background .15s;}
+.ci.hov,.ci.sel{background:#FFF8F0;}
+.ci-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;width:36px;height:36px;font-size:12px;}
+.ci-info{flex:1;min-width:0;}
+.ci-co{font-size:10px;color:#8a6a65;margin-bottom:2px;}
+.ci-name{font-size:13px;font-weight:700;color:#532822;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-prev{font-size:12px;color:#8a6a65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;}
+.ci-time{font-size:11px;color:#8a6a65;}
+.bdg{border-radius:50px;padding:2px 6px;font-size:10px;font-weight:700;min-width:18px;text-align:center;color:#fff;}
+.ch-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;}
+.ch-slack{background:#F2E8F9;color:#4A154B;}
+.ch-wa{background:#E8F8EC;color:#1a6b30;}
+.ch-em{background:#f0f0f0;color:#6b6b6b;}
+.mt{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.th-hdr{background:#fff;padding:14px 18px;border-bottom:.5px solid #f0e8e4;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.th-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.th-name{font-size:14px;font-weight:700;color:#532822;}
+.th-sub{font-size:11px;color:#8a6a65;margin-top:1px;}
+.th-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:#FFF8F0;}
+.br{display:flex;flex-direction:column;gap:2px;}
+.br.out{align-items:flex-end;}
+.bub{padding:10px 14px;border-radius:13px;font-size:13px;line-height:1.5;max-width:70%;}
+.bub.them{background:#E9E9EB;color:#1a1a1a;border-bottom-left-radius:3px;}
+.bub.me{background:#0084C5;color:#fff;border-bottom-right-radius:3px;}
+.bub.new{animation:bIn .3s ease;}
+@keyframes bIn{from{opacity:0;transform:scale(.95) translateY(4px);}to{opacity:1;transform:none;}}
+.bt{font-size:10px;color:#8a6a65;padding:0 3px;}
+.mc{background:#fff;padding:13px 18px;border-top:.5px solid #f0e8e4;flex-shrink:0;display:flex;flex-direction:column;gap:9px;}
+.ch-tabs{display:flex;gap:6px;}
+.cht{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:50px;
+  border:1.5px solid #e0d4cf;background:#fff;font-size:12px;font-family:inherit;font-weight:600;color:#532822;}
+.compose{background:#fff;border:.5px solid #e0d4cf;border-radius:50px;
+  padding:7px 7px 7px 15px;display:flex;align-items:center;gap:9px;
+  transition:border-color .2s,box-shadow .2s;}
+.compose.focus{border-color:#532822;box-shadow:0 0 0 2px rgba(83,40,34,.08);}
+.compose-txt{flex:1;font-size:13px;color:#532822;min-height:20px;line-height:1.4;outline:none;cursor:text;}
+.compose-txt:empty::before{content:attr(data-ph);color:#b5a09c;}
+.snd-btn{background:#0084C5;color:#fff;border:none;border-radius:50px;padding:7px 18px;font-size:12px;font-family:inherit;font-weight:700;cursor:pointer;white-space:nowrap;}
+.sk-panel{width:0;min-width:0;overflow:hidden;display:flex;flex-direction:column;
+  transition:width .5s ease,min-width .5s ease;border-left:.5px solid #e8e0db;}
+.sk-panel.open{width:52%;min-width:300px;}
+.sk-hdr{background:#4A154B;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.sk-hdr-ch{font-size:14px;font-weight:700;}
+.sk-hdr-sub{font-size:11px;opacity:.6;margin-top:1px;}
+.sk-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:#fff;}
+.sk-msg{display:flex;gap:10px;}
+.sk-av{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.sk-mb{flex:1;}
+.sk-uname{font-size:13px;font-weight:700;color:#1a1a1a;}
+.sk-time{font-size:10px;color:#6b6b6b;margin-left:6px;}
+.sk-text{font-size:13px;color:#1a1a1a;margin-top:3px;line-height:1.5;}
+.sk-div{height:1px;background:#f0f0f0;}
+.sk-new{opacity:0;}
+.sk-new.ping{animation:pIn .4s ease forwards;}
+@keyframes pIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.sk-via{font-size:10px;color:#4A154B;font-weight:700;margin-left:6px;}
+
+/* ═══ SCENE 4 — AUTOMATIONS ═══ */
+#s4{background:#3a1a14;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:56px;}
+.auto-lbl{font-size:11px;font-weight:700;color:rgba(255,242,233,.38);
+  text-transform:uppercase;letter-spacing:.14em;align-self:flex-start;max-width:740px;width:100%;
+  opacity:0;animation:fuD .4s ease .1s forwards;}
+.a-toast{width:100%;max-width:740px;background:rgba(255,242,233,.06);
+  border:1px solid rgba(255,242,233,.1);border-radius:14px;padding:18px 22px;
+  display:flex;align-items:flex-start;gap:18px;opacity:0;transform:translateX(-20px);}
+.a-toast.show{animation:tIn .5s ease forwards;}
+@keyframes tIn{to{opacity:1;transform:translateX(0);}}
+.a-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.a-body{flex:1;}
+.a-trig{font-size:10px;font-weight:700;color:rgba(255,242,233,.45);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.a-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.a-step{font-size:13px;font-weight:500;color:#FFF2E9;}
+.a-arr{font-size:12px;color:rgba(255,242,233,.32);}
+.a-tag{background:rgba(255,242,233,.1);color:#FFF2E9;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600;}
+
+/* ═══ SCENE 5 — INVOICING ═══ */
+#s5{background:#FFF2E9;flex-direction:row;}
+.inv-sb{width:240px;min-width:240px;background:#fff;border-right:.5px solid #f0e8e4;display:flex;flex-direction:column;}
+.inv-sb-top{padding:13px 12px 12px;border-bottom:.5px solid #f0e8e4;}
+.nc-btn{width:100%;padding:8px 14px;background:#532822;color:#FFF2E9;border:none;border-radius:50px;
+  font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ai-sess-lbl{font-size:10px;font-weight:700;color:#9b9b9b;text-transform:uppercase;letter-spacing:.6px;padding:10px 14px 4px;}
+.ai-si{padding:7px 12px;border-radius:8px;cursor:pointer;margin:0 6px 1px;}
+.ai-si.active{background:#FFF2E9;}
+.ai-si-title{font-size:13px;font-weight:500;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ai-si-time{font-size:11px;color:#9b9b9b;margin-top:2px;}
+.ai-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.ai-greet{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;text-align:center;padding:36px 24px 16px;}
+.ai-gname{font-size:32px;font-weight:700;color:#532822;letter-spacing:-.5px;}
+.ai-gsub{font-size:14px;color:#8a6a65;margin-top:8px;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px;max-width:520px;}
+.pill{background:#fff;border:1.5px solid #e0d4cf;border-radius:50px;
+  padding:7px 16px;font-size:13px;font-weight:600;color:#532822;cursor:pointer;font-family:inherit;}
+.pill.hov{background:#532822;border-color:#532822;color:#FFF2E9;}
+.ai-msgs{flex:1;overflow-y:auto;padding:18px 24px;display:none;flex-direction:column;gap:12px;}
+.ai-msgs.on{display:flex;}
+.ai-m{padding:11px 15px;border-radius:14px;font-size:13px;line-height:1.55;animation:fuD .3s ease;}
+.ai-m.u{align-self:flex-end;max-width:78%;background:#532822;color:#FFF2E9;border-bottom-right-radius:3px;}
+.ai-m.b{align-self:flex-start;max-width:78%;background:#fff;color:#1a1a1a;border:1px solid #e8e0db;border-bottom-left-radius:3px;}
+.ai-m.t{align-self:flex-start;background:#fff;color:#9b9b9b;font-style:italic;border:1px solid #e8e0db;border-bottom-left-radius:3px;}
+.ai-ac{align-self:flex-start;background:#fff;border:1px solid #e8e0db;border-radius:12px;
+  overflow:hidden;max-width:84%;box-shadow:0 2px 12px rgba(0,0,0,.06);animation:fuD .4s ease;}
+.ai-ac-hdr{background:#532822;color:#FFF2E9;padding:10px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.ai-ac-body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+.ai-row{display:flex;gap:8px;align-items:baseline;}
+.ai-lbl{font-size:10px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:.5px;width:68px;flex-shrink:0;}
+.ai-val{font-size:13px;color:#1a1a1a;font-weight:500;}
+.ai-amt{font-size:24px;font-weight:700;color:#532822;}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:50px;
+  font-size:12px;font-weight:700;margin-top:4px;opacity:0;}
+.ai-badge.inv{background:#D8F7C5;color:#1a6b30;}
+.ai-badge.pop{animation:bPop .45s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes bPop{from{opacity:0;transform:scale(.5);}to{opacity:1;transform:scale(1);}}
+.ai-comp-wrap{background:#FFF2E9;padding:10px 20px 18px;flex-shrink:0;}
+.ai-comp-box{background:#fff;border:1px solid #e8e0db;border-radius:14px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:8px;max-width:680px;margin:0 auto;
+  transition:border-color .15s,box-shadow .15s;}
+.ai-comp-box.focus{border-color:#532822;box-shadow:0 0 0 3px rgba(83,40,34,.07);}
+.ai-ta{width:100%;min-height:44px;border:none;outline:none;font-family:inherit;
+  font-size:13px;color:#1a1a1a;resize:none;background:transparent;line-height:1.55;}
+.ai-ta::placeholder{color:#b8b8b8;}
+.ai-send-row{display:flex;align-items:center;justify-content:flex-end;}
+.ai-send{padding:7px 18px;background:#532822;color:#FFF2E9;border:none;border-radius:50px;
+  font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;}
+
+/* Calendar zoom overlay */
+#cal-zoom{position:absolute;inset:0;background:rgba(255,242,233,.92);
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;opacity:0;transition:opacity .5s ease;z-index:500;
+  backdrop-filter:blur(6px);}
+#cal-zoom.on{opacity:1;}
+#cal-card{background:#fff;border:1px solid #e8e0db;border-radius:20px;
+  overflow:hidden;width:380px;box-shadow:0 24px 70px rgba(83,40,34,.2);
+  transition:transform 1.8s cubic-bezier(.08,0,.08,1);transform:scale(.7);}
+#cal-zoom.on #cal-card{transform:scale(1.18);}
+.cal-top{background:#532822;color:#FFF2E9;padding:16px 20px;display:flex;align-items:center;gap:12px;}
+.cal-top-ico{width:36px;height:36px;border-radius:9px;background:rgba(255,242,233,.15);
+  display:flex;align-items:center;justify-content:center;}
+.cal-top-title{font-size:14px;font-weight:700;}
+.cal-top-sub{font-size:11px;opacity:.65;margin-top:2px;}
+.cal-body{padding:18px 20px;}
+.cal-row{display:flex;gap:10px;align-items:baseline;margin-bottom:10px;}
+.cal-lbl{font-size:10px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:.5px;width:72px;flex-shrink:0;}
+.cal-val{font-size:13px;color:#1a1a1a;font-weight:500;}
+.cal-badge-wrap{margin-top:6px;}
+.cal-bdg{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;
+  background:#D6EAFF;color:#003580;border-radius:50px;font-size:12px;font-weight:700;opacity:0;}
+.cal-bdg.pop{animation:bPop .45s cubic-bezier(.34,1.56,.64,1) .3s forwards;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:14px;padding-top:14px;border-top:.5px solid #f0e8e4;}
+.cgd{font-size:10px;color:#8a6a65;text-align:center;padding:2px 0;font-weight:600;}
+.cg{font-size:11px;color:#532822;text-align:center;padding:5px 2px;border-radius:50%;
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.cg.today{background:#FFD05D;font-weight:700;}
+.cg.evt{background:#532822;color:#FFF2E9;font-weight:700;}
+.cg.dim{color:#c9b8b4;}
+
+/* ═══ SCENE 6 — END CARD ═══ */
+#s6{background:#0a0402;flex-direction:column;align-items:center;justify-content:center;gap:22px;}
+#end-logo{width:200px;opacity:0;transition:opacity 1.2s ease;}
+#end-logo.on{opacity:1;}
+#end-tag{font-size:17px;font-weight:500;color:rgba(255,242,233,.55);letter-spacing:.03em;
+  opacity:0;transition:opacity 1.2s ease .4s;}
+#end-tag.on{opacity:1;}
+
+.sl-svg{display:inline-block;vertical-align:middle;}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- SCENE 1: BRIEFING -->
+<div class="sc on" id="s1">
+  <div class="b-greet">Good morning, Sarah.</div>
+  <div class="b-grid">
+    <div class="b-card" style="background:#E05228;color:#FFF2E9;">
+      <div class="b-bg" style="background:#FFF2E9;"></div>
+      <div class="b-lbl">Open Tasks</div><div class="b-num">5</div>
+      <div class="b-row">Finalise brand guidelines</div>
+      <div class="b-row">Draft social content</div>
+    </div>
+    <div class="b-card" style="background:#0084C5;color:#FFF2E9;">
+      <div class="b-bg" style="background:#FFF2E9;"></div>
+      <div class="b-lbl">Unread Messages</div><div class="b-num">3</div>
+      <div class="b-row">James Hartley · Slack</div>
+      <div class="b-row">Rachel Vance · WhatsApp</div>
+    </div>
+    <div class="b-card" style="background:#44A574;color:#FFF2E9;">
+      <div class="b-bg" style="background:#FFF2E9;"></div>
+      <div class="b-lbl">Appointments</div><div class="b-num">2</div>
+      <div class="b-row">Strategy call — Rachel 2pm</div>
+      <div class="b-row">Review — Tom 4pm</div>
+    </div>
+    <div class="b-card" style="background:#FF9299;color:#FFF2E9;">
+      <div class="b-bg" style="background:#FFF2E9;"></div>
+      <div class="b-lbl">New Contacts</div><div class="b-num">4</div>
+      <div class="b-row">Added this week</div>
+      <div class="b-row">2 from referrals</div>
+    </div>
+  </div>
+  <div id="bz">
+    <div id="bz-card">
+      <div id="bz-bg"></div>
+      <div id="bz-lbl">Unread Messages</div>
+      <div id="bz-num">3</div>
+      <div id="bz-sub">James, Rachel + 1 more</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 2-3: MESSAGES -->
+<div class="sc" id="s-msgs">
+  <div class="ml" id="ml">
+    <div class="ml-hdr"><div class="ml-title">Messages</div></div>
+    <div class="ml-search">
+      <svg width="13" height="13" fill="none" stroke="#b5a09c" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input placeholder="Search conversations…" />
+    </div>
+    <div class="conv-list">
+      <div class="ci sel" id="ci-james">
+        <div class="ci-av" style="background:#FFD05D;color:#532822;">JH</div>
+        <div class="ci-info">
+          <div class="ci-co">Bloom Studio</div>
+          <div class="ci-name">James Hartley</div>
+          <div class="ci-prev">Love the new direction…</div>
+        </div>
+        <div class="ci-right">
+          <div class="ci-time">8m ago</div>
+          <span class="bdg" style="background:#4A154B;">2</span>
+          <div class="ch-pill ch-slack">
+            <svg class="sl-svg" width="9" height="9" viewBox="0 0 122.8 122.8"><path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9zm6.5 0c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9v32.3c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V77.6z" fill="#E01E5A"/><path d="M45.2 25.8c-7.1 0-12.9-5.8-12.9-12.9S38.1 0 45.2 0s12.9 5.8 12.9 12.9v12.9H45.2zm0 6.5c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H12.9C5.8 58.1 0 52.3 0 45.2s5.8-12.9 12.9-12.9h32.3z" fill="#36C5F0"/><path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2zm-6.5 0c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V12.9C64.7 5.8 70.5 0 77.6 0s12.9 5.8 12.9 12.9v32.3z" fill="#2EB67D"/><path d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z" fill="#ECB22E"/></svg>
+            Slack
+          </div>
+        </div>
+      </div>
+      <div class="ci" id="ci-rachel">
+        <div class="ci-av" style="background:#88BFFF;color:#0a3a6e;">RV</div>
+        <div class="ci-info">
+          <div class="ci-co">Vance Creative</div>
+          <div class="ci-name">Rachel Vance</div>
+          <div class="ci-prev">Quick question about the…</div>
+        </div>
+        <div class="ci-right">
+          <div class="ci-time">1h ago</div>
+          <span class="bdg" style="background:#25D366;">1</span>
+          <div class="ch-pill ch-wa">WhatsApp</div>
+        </div>
+      </div>
+      <div class="ci" id="ci-tom">
+        <div class="ci-av" style="background:#FF9299;color:#7a1a22;">TO</div>
+        <div class="ci-info">
+          <div class="ci-co">Independent</div>
+          <div class="ci-name">Tom Okello</div>
+          <div class="ci-prev">Following up on the proposal</div>
+        </div>
+        <div class="ci-right">
+          <div class="ci-time">3h ago</div>
+          <div class="ch-pill ch-em">Email</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt">
+    <div class="th-hdr">
+      <div class="th-av" style="background:#FFD05D;color:#532822;">JH</div>
+      <div>
+        <div class="th-name">James Hartley</div>
+        <div class="th-sub">Bloom Studio · Slack · Last message 8m ago</div>
+      </div>
+    </div>
+    <div class="th-msgs" id="th-msgs">
+      <div class="br">
+        <div class="bub them">Love the new direction — the lighter palette really works. Can we look at the hero typography too?</div>
+        <div class="bt">James · 8m ago · via Slack</div>
+      </div>
+    </div>
+    <div class="mc">
+      <div class="ch-tabs">
+        <button class="cht" style="background:#4A154B;color:#fff;border-color:#4A154B;display:flex;align-items:center;gap:4px;">
+          <svg class="sl-svg" width="10" height="10" viewBox="0 0 122.8 122.8"><path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9zm6.5 0c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9v32.3c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V77.6z" fill="#E01E5A"/><path d="M45.2 25.8c-7.1 0-12.9-5.8-12.9-12.9S38.1 0 45.2 0s12.9 5.8 12.9 12.9v12.9H45.2zm0 6.5c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H12.9C5.8 58.1 0 52.3 0 45.2s5.8-12.9 12.9-12.9h32.3z" fill="#36C5F0"/><path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2zm-6.5 0c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V12.9C64.7 5.8 70.5 0 77.6 0s12.9 5.8 12.9 12.9v32.3z" fill="#2EB67D"/><path d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z" fill="#ECB22E"/></svg>
+          Slack
+        </button>
+        <button class="cht">Email</button>
+        <button class="cht">WhatsApp</button>
+      </div>
+      <div class="compose" id="compose-row">
+        <div class="compose-txt" id="compose-txt" data-ph="Reply to James via Slack…"></div>
+        <button class="snd-btn" id="snd-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sk-panel" id="sk-panel">
+    <div class="sk-hdr">
+      <svg width="18" height="18" viewBox="0 0 122.8 122.8"><path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9zm6.5 0c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9v32.3c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V77.6z" fill="#E01E5A"/><path d="M45.2 25.8c-7.1 0-12.9-5.8-12.9-12.9S38.1 0 45.2 0s12.9 5.8 12.9 12.9v12.9H45.2zm0 6.5c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H12.9C5.8 58.1 0 52.3 0 45.2s5.8-12.9 12.9-12.9h32.3z" fill="#36C5F0"/><path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2zm-6.5 0c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V12.9C64.7 5.8 70.5 0 77.6 0s12.9 5.8 12.9 12.9v32.3z" fill="#2EB67D"/><path d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z" fill="#ECB22E"/></svg>
+      <div>
+        <div class="sk-hdr-ch">#bloom-studio</div>
+        <div class="sk-hdr-sub">Bloom Studio workspace</div>
+      </div>
+    </div>
+    <div class="sk-body" id="sk-body">
+      <div class="sk-msg">
+        <div class="sk-av" style="background:#FFD05D;color:#532822;">JH</div>
+        <div class="sk-mb">
+          <span class="sk-uname">James Hartley</span><span class="sk-time">9:02 AM</span>
+          <div class="sk-text">Love the new direction — the lighter palette really works.</div>
+        </div>
+      </div>
+      <div class="sk-div"></div>
+      <!-- Inbound (scene 2) -->
+      <div class="sk-new" id="sk-inbound">
+        <div class="sk-msg">
+          <div class="sk-av" style="background:#FFD05D;color:#532822;">JH</div>
+          <div class="sk-mb">
+            <span class="sk-uname">James Hartley</span><span class="sk-time">9:08 AM</span>
+            <div class="sk-text" id="sk-in-txt"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Outbound (scene 3) -->
+      <div class="sk-new" id="sk-outbound">
+        <div class="sk-msg">
+          <div class="sk-av" style="background:#532822;color:#FFF2E9;">SA</div>
+          <div class="sk-mb">
+            <span class="sk-uname">Sarah</span><span class="sk-via">via Kiki</span>
+            <div class="sk-text" id="sk-out-txt"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="background:#fff;padding:10px 14px;border-top:1px solid #e8e0db;flex-shrink:0;">
+      <div style="background:#f8f8f8;border:1px solid #e0d4cf;border-radius:8px;padding:8px 12px;font-size:13px;color:#6b6b6b;display:flex;align-items:center;justify-content:space-between;">
+        <span>Message #bloom-studio</span>
+        <svg width="14" height="14" fill="none" stroke="#6b6b6b" stroke-width="2" viewBox="0 0 24 24"><path d="m22 2-11 11"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 4: AUTOMATIONS -->
+<div class="sc" id="s4">
+  <div class="auto-lbl">Kiki Automations</div>
+  <div class="a-toast" id="at1">
+    <div class="a-icon" style="background:rgba(255,208,93,.15);">
+      <svg width="20" height="20" fill="none" stroke="#FFD05D" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div class="a-body">
+      <div class="a-trig">New Lead</div>
+      <div class="a-flow">
+        <span class="a-step">Form submitted</span><span class="a-arr">→</span>
+        <span class="a-tag">Added to pipeline</span><span class="a-arr">→</span>
+        <span class="a-tag">Tagged 'New Enquiry'</span><span class="a-arr">→</span>
+        <span class="a-step">Welcome email sent</span>
+      </div>
+    </div>
+  </div>
+  <div class="a-toast" id="at2">
+    <div class="a-icon" style="background:rgba(68,165,116,.15);">
+      <svg width="20" height="20" fill="none" stroke="#44A574" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+    </div>
+    <div class="a-body">
+      <div class="a-trig">Invoice Paid</div>
+      <div class="a-flow">
+        <span class="a-step">Bloom Studio paid $4,200</span><span class="a-arr">→</span>
+        <span class="a-tag">Tagged 'Paid'</span><span class="a-arr">→</span>
+        <span class="a-step">Thank-you email sent automatically</span>
+      </div>
+    </div>
+  </div>
+  <div class="a-toast" id="at3">
+    <div class="a-icon" style="background:rgba(224,82,40,.15);">
+      <svg width="20" height="20" fill="none" stroke="#E05228" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.93a16 16 0 0 0 6.16 6.16l1.19-1.19a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </div>
+    <div class="a-body">
+      <div class="a-trig">Client Gone Quiet</div>
+      <div class="a-flow">
+        <span class="a-step">No reply in 7 days</span><span class="a-arr">→</span>
+        <span class="a-tag">Follow-up triggered</span><span class="a-arr">→</span>
+        <span class="a-step">Personalised message sent</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 5: INVOICING + CALENDAR -->
+<div class="sc" id="s5">
+  <div class="inv-sb">
+    <div class="inv-sb-top">
+      <button class="nc-btn">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        New chat
+      </button>
+    </div>
+    <div class="ai-sess-lbl">Today</div>
+    <div class="ai-si active"><div class="ai-si-title">Summarise client activity</div><div class="ai-si-time">1h ago</div></div>
+    <div class="ai-si"><div class="ai-si-title">Draft follow-up for James</div><div class="ai-si-time">3h ago</div></div>
+    <div class="ai-sess-lbl">Yesterday</div>
+    <div class="ai-si"><div class="ai-si-title">What tasks are overdue?</div><div class="ai-si-time">Yesterday</div></div>
+    <div class="ai-si"><div class="ai-si-title">Show unpaid invoices</div><div class="ai-si-time">Yesterday</div></div>
+  </div>
+  <div class="ai-main">
+    <div class="ai-greet" id="ai-greet">
+      <div class="ai-gname">Good morning, Sarah.</div>
+      <div class="ai-gsub">What are we working on today?</div>
+      <div class="pills">
+        <button class="pill" id="p1">Summarise recent client activity</button>
+        <button class="pill" id="p2">What tasks are overdue?</button>
+        <button class="pill" id="p3">Show unpaid invoices</button>
+        <button class="pill" id="p4">Draft a follow-up email</button>
+      </div>
+    </div>
+    <div class="ai-msgs" id="ai-msgs"></div>
+    <div class="ai-comp-wrap">
+      <div class="ai-comp-box" id="ai-box">
+        <textarea class="ai-ta" id="ai-ta" placeholder="Ask Kiki anything about your clients or business…"></textarea>
+        <div class="ai-send-row">
+          <button class="ai-send" id="ai-send">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Calendar zoom overlay -->
+  <div id="cal-zoom">
+    <div id="cal-card">
+      <div class="cal-top">
+        <div class="cal-top-ico">
+          <svg width="18" height="18" fill="none" stroke="#FFF2E9" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <div>
+          <div class="cal-top-title">Appointment booked</div>
+          <div class="cal-top-sub">Strategy call · Rachel Vance</div>
+        </div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-row"><span class="cal-lbl">With</span><span class="cal-val">Rachel Vance · Vance Creative</span></div>
+        <div class="cal-row"><span class="cal-lbl">When</span><span class="cal-val">Friday 20 Jun, 2:00 pm</span></div>
+        <div class="cal-row"><span class="cal-lbl">Duration</span><span class="cal-val">60 minutes</span></div>
+        <div class="cal-badge-wrap">
+          <div class="cal-bdg" id="cal-bdg">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Added to calendar
+          </div>
+        </div>
+        <div class="cal-grid">
+          <div class="cgd">M</div><div class="cgd">T</div><div class="cgd">W</div><div class="cgd">T</div><div class="cgd">F</div><div class="cgd">S</div><div class="cgd">S</div>
+          <div class="cg dim">9</div><div class="cg dim">10</div><div class="cg dim">11</div><div class="cg dim">12</div><div class="cg today">13</div><div class="cg dim">14</div><div class="cg dim">15</div>
+          <div class="cg">16</div><div class="cg">17</div><div class="cg">18</div><div class="cg">19</div><div class="cg evt">20</div><div class="cg">21</div><div class="cg">22</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 6: END CARD -->
+<div class="sc" id="s6">
+  <svg id="end-logo" viewBox="0 0 160 52" fill="none" xmlns="http://www.w3.org/2000/svg" width="220">
+    <text x="0" y="42" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="52" font-weight="700" letter-spacing="-2" fill="#FFF2E9">Kiki</text>
+  </svg>
+  <div id="end-tag">Your clients. Your business. One place.</div>
+</div>
+
+<!-- Chrome -->
+<div id="cur">
+  <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
+    <path d="M3.5 2.5L18.5 13L11.5 14.2L7.8 22.5L3.5 2.5Z" fill="white" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/>
+  </svg>
+</div>
+<div id="cap"></div>
+<div id="fade" class="on"></div>
+</div>
+
+<script>
+const stage=document.getElementById('stage');
+function scale(){
+  const s=Math.min(window.innerWidth/1100,window.innerHeight/720)*.93;
+  stage.style.transform=`scale(${s})`;
+  stage.style.marginTop=`${(window.innerHeight-720*s)/2}px`;
+  stage.style.marginLeft=`${(window.innerWidth-1100*s)/2}px`;
+}
+scale(); window.addEventListener('resize',scale);
+
+const cur=document.getElementById('cur');
+const cap=document.getElementById('cap');
+const fade=document.getElementById('fade');
+const W=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function fadeOut(ms=550){fade.classList.add('live');fade.style.transitionDuration=ms+'ms';fade.classList.add('on');await W(ms);}
+async function fadeIn(ms=550){fade.classList.add('live');fade.style.transitionDuration=ms+'ms';fade.classList.remove('on');await W(ms);}
+function setC(t){cap.textContent=t;cap.classList.add('on');}
+function clrC(){cap.classList.remove('on');}
+function show(id){document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+function hov(el,on){if(el)on?el.classList.add('hov'):el.classList.remove('hov');}
+async function mov(x,y,ms=550,cls=''){
+  cur.className=cls;cur.style.transitionDuration=(ms/1000)+'s';
+  cur.style.left=x+'px';cur.style.top=y+'px';await W(ms);
+}
+async function clk(x,y){
+  await mov(x,y,180,'fast');
+  const r=document.createElement('div');r.className='rip';
+  r.style.cssText=`left:${x-12}px;top:${y-12}px;width:24px;height:24px;`;
+  stage.appendChild(r);await W(100);r.remove();
+}
+async function typeEl(el,txt,spd=46){
+  el.value!==undefined?(el.value=''):(el.textContent='');
+  for(let c of txt){el.value!==undefined?(el.value+=c):(el.textContent+=c);await W(spd+Math.random()*24);}
+}
+function addMsg(c,cls,txt){const d=document.createElement('div');d.className=cls+' ai-m';d.textContent=txt;c.appendChild(d);c.scrollTop=c.scrollHeight;return d;}
+function addCard(c,html){const d=document.createElement('div');d.className='ai-ac';d.innerHTML=html;c.appendChild(d);c.scrollTop=c.scrollHeight;return d;}
+
+// ═══ SCENE 1: BRIEFING (~10s) ═══
+async function scene1(){
+  show('s1');
+  document.getElementById('bz').classList.remove('on');
+  document.querySelectorAll('.b-card,.b-greet').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+  clrC();
+  cur.style.transition='none';cur.style.left='550px';cur.style.top='520px';
+  await W(100);cur.style.transition='';await W(1800);
+
+  const cards=document.querySelectorAll('.b-card');
+  await mov(260,295,650);hov(cards[0],true);await W(700);hov(cards[0],false);
+  await mov(560,295,450);hov(cards[1],true);await W(700);hov(cards[1],false);
+
+  setC('Start every day knowing exactly where you stand.');
+  await W(800);
+  // Zoom into Unread Messages card
+  document.getElementById('bz').classList.add('on');
+  await W(2800);clrC();
+}
+
+// ═══ SCENE 2: SLACK MESSAGE ARRIVING (~11s) ═══
+async function scene2(){
+  show('s-msgs');
+  document.getElementById('sk-panel').classList.remove('open');
+  document.getElementById('sk-inbound').classList.remove('ping');
+  document.getElementById('sk-outbound').classList.remove('ping');
+  document.getElementById('sk-in-txt').textContent='';
+  document.getElementById('sk-out-txt').textContent='';
+  document.getElementById('compose-txt').textContent='';
+  document.getElementById('compose-row').classList.remove('focus');
+  document.querySelectorAll('.ci').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('ci-james').classList.add('sel');
+  const msgs=document.getElementById('th-msgs');
+  while(msgs.children.length>1)msgs.removeChild(msgs.lastChild);
+  clrC();
+
+  cur.style.transition='none';cur.style.left='125px';cur.style.top='200px';
+  await W(100);cur.style.transition='';await W(700);
+
+  // Open Slack panel
+  document.getElementById('sk-panel').classList.add('open');
+  await W(700);
+
+  // New inbound Slack message appears
+  const inTxt='Also — can you send me the final logo files when you get a chance?';
+  document.getElementById('sk-in-txt').textContent=inTxt;
+  document.getElementById('sk-inbound').classList.add('ping');
+
+  // Mirror into Kiki thread
+  const row=document.createElement('div');row.className='br';
+  row.innerHTML=`<div class="bub them new">${inTxt}</div><div class="bt">James · just now · via Slack</div>`;
+  msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;
+
+  setC('A message from James arrives in Slack — and appears in Kiki instantly.');
+  await W(3800);clrC();
+}
+
+// ═══ SCENE 3: REPLY GOES BACK OUT (~12s) ═══
+async function scene3(){
+  const msgs=document.getElementById('th-msgs');
+  clrC();
+
+  await mov(420,650,700);
+  document.getElementById('compose-row').classList.add('focus');
+  await clk(420,650);await W(300);
+
+  const reply="Sending them over now! I'll also mock up the hero type in Neue Haas — will share by EOD.";
+  const ct=document.getElementById('compose-txt');
+  for(let c of reply){ct.textContent+=c;await W(44+Math.random()*22);}
+  await W(500);
+
+  await mov(840,650,300,'fast');
+  hov(document.querySelector('.snd-btn'),true);await W(200);
+  await clk(840,650);
+  hov(document.querySelector('.snd-btn'),false);
+
+  // Add to Kiki thread
+  const out=document.createElement('div');out.className='br out';
+  out.innerHTML=`<div class="bub me new">${reply}</div><div class="bt">You · just now · via Slack</div>`;
+  msgs.appendChild(out);ct.textContent='';
+  document.getElementById('compose-row').classList.remove('focus');
+  msgs.scrollTop=msgs.scrollHeight;
+  await W(500);
+
+  // Ping into Slack panel
+  document.getElementById('sk-out-txt').textContent=reply;
+  document.getElementById('sk-outbound').classList.add('ping');
+
+  setC('Reply from Kiki. Lands in Slack. Two-way, in real time.');
+  await W(4000);clrC();
+}
+
+// ═══ SCENE 4: AUTOMATIONS (~11s) ═══
+async function scene4(){
+  show('s4');
+  ['at1','at2','at3'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('show');el.style.opacity='0';el.style.transform='translateX(-20px)';
+  });
+  const lbl=document.querySelector('.auto-lbl');
+  lbl.style.animation='none';lbl.offsetHeight;lbl.style.animation='';
+  clrC();
+  cur.style.transition='none';cur.style.left='550px';cur.style.top='650px';
+  await W(100);cur.style.transition='';await W(700);
+
+  for(let i=1;i<=3;i++){
+    const el=document.getElementById('at'+i);
+    el.style.animation='none';el.offsetHeight;el.classList.add('show');
+    await W(1700);
+  }
+  setC('Set it once. Let Kiki handle the rest.');
+  await W(3500);clrC();
+}
+
+// ═══ SCENE 5: INVOICING + CALENDAR (~15s) ═══
+async function scene5(){
+  show('s5');
+  document.getElementById('ai-greet').style.display='';
+  const msgs=document.getElementById('ai-msgs');
+  msgs.innerHTML='';msgs.classList.remove('on');
+  document.getElementById('ai-ta').value='';
+  document.getElementById('ai-box').classList.remove('focus');
+  document.getElementById('cal-zoom').classList.remove('on');
+  document.getElementById('cal-bdg').classList.remove('pop');
+  clrC();
+  cur.style.transition='none';cur.style.left='580px';cur.style.top='510px';
+  await W(100);cur.style.transition='';await W(600);
+
+  // Hover a pill
+  await mov(470,425,600);hov(document.getElementById('p3'),true);await W(500);hov(document.getElementById('p3'),false);
+
+  // Click compose
+  await mov(580,590,600);
+  document.getElementById('ai-box').classList.add('focus');
+  await clk(580,590);await W(300);
+
+  const ta=document.getElementById('ai-ta');
+  await typeEl(ta,"Send invoice to James at Bloom Studio for the brand identity project — $4,200");
+  await W(500);
+
+  await mov(960,617,300,'fast');
+  hov(document.querySelector('.ai-send'),true);await W(180);
+  await clk(960,617);
+  hov(document.querySelector('.ai-send'),false);
+
+  document.getElementById('ai-greet').style.display='none';
+  msgs.classList.add('on');
+  addMsg(msgs,'u',ta.value);ta.value='';
+  document.getElementById('ai-box').classList.remove('focus');
+
+  const t=addMsg(msgs,'t','Thinking…');await W(1400);t.remove();
+
+  addCard(msgs,`
+    <div class="ai-ac-hdr">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+      Invoice sent
+    </div>
+    <div class="ai-ac-body">
+      <div class="ai-row"><span class="ai-lbl">Client</span><span class="ai-val">James Hartley</span></div>
+      <div class="ai-row"><span class="ai-lbl">Company</span><span class="ai-val">Bloom Studio</span></div>
+      <div class="ai-row"><span class="ai-lbl">Project</span><span class="ai-val">Brand Identity</span></div>
+      <div class="ai-row"><span class="ai-lbl">Amount</span><span class="ai-amt">$4,200.00</span></div>
+      <div class="ai-badge inv" id="inv-badge">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Sent via email
+      </div>
+    </div>`);
+  await W(500);
+  document.getElementById('inv-badge').classList.add('pop');
+  setC('Invoice sent. Without leaving the app.');
+  await W(2500);clrC();await W(600);
+
+  // Calendar pops up and zooms in
+  document.getElementById('cal-zoom').classList.add('on');
+  await W(500);
+  document.getElementById('cal-bdg').classList.add('pop');
+  setC('Book appointments. Update your calendar. All from one prompt.');
+  await W(4500);clrC();
+}
+
+// ═══ SCENE 6: END CARD (~6s) ═══
+async function scene6(){
+  show('s6');
+  document.getElementById('end-logo').classList.remove('on');
+  document.getElementById('end-tag').classList.remove('on');
+  cur.style.opacity='0';clrC();
+  await W(500);
+  document.getElementById('end-logo').classList.add('on');
+  await W(1400);
+  document.getElementById('end-tag').classList.add('on');
+  await W(5500);
+  cur.style.opacity='1';
+}
+
+async function run(){
+  while(true){
+    await fadeIn(400);
+    await scene1();await fadeOut();
+    await scene2();await fadeOut();
+    await scene3();await fadeOut();
+    await scene4();await fadeOut();
+    await scene5();await fadeOut();
+    await scene6();await fadeOut(800);
+    await W(200);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', run);
+</script>
+</body>
+</html>
