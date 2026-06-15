@@ -38,23 +38,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#532822;display:flex
 
 /* Fade */
 #fade{position:absolute;inset:0;background:#000;z-index:9990;
-  opacity:1;pointer-events:none;transition:none;}
+  opacity:0;pointer-events:none;transition:none;}
 #fade.on{opacity:1;}
 #fade.live{transition:opacity .55s ease;}
 
 /* ═══ SCENE 1 — BRIEFING ═══ */
 #s1{background:#FFF2E9;flex-direction:column;align-items:center;justify-content:center;gap:0;}
 .b-greet{font-size:36px;font-weight:700;color:#532822;letter-spacing:-.5px;margin-bottom:32px;
-  opacity:0;animation:fuD .5s ease .2s forwards;}
+  opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease;}
+.b-greet.vis{opacity:1;transform:translateY(0);}
 .b-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:600px;margin-bottom:32px;}
 .b-card{border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;
   display:flex;flex-direction:column;
   opacity:0;transform:translateY(14px);
-  transition:box-shadow .2s,transform .15s;}
-.b-card:nth-child(1){animation:cIn .45s ease .45s forwards;}
-.b-card:nth-child(2){animation:cIn .45s ease .65s forwards;}
-.b-card:nth-child(3){animation:cIn .45s ease .85s forwards;}
-.b-card:nth-child(4){animation:cIn .45s ease 1.05s forwards;}
+  transition:opacity .45s ease,transform .45s ease,box-shadow .2s;}
+.b-card.vis{opacity:1;transform:translateY(0);}
 .b-card.hov{box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(-3px)!important;}
 .b-bg{position:absolute;right:-18px;bottom:-18px;width:80px;height:80px;border-radius:50%;opacity:.15;}
 .b-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;opacity:.75;}
@@ -71,8 +69,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#532822;display:flex
 #bz-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.7;margin-bottom:10px;}
 #bz-num{font-size:56px;font-weight:700;line-height:1;margin-bottom:4px;}
 #bz-sub{font-size:14px;opacity:.72;}
-@keyframes fuD{to{opacity:1;transform:translateY(0);}}
-@keyframes cIn{to{opacity:1;transform:translateY(0);}}
 
 /* ═══ SCENE 2-3 — MESSAGES ═══ */
 #s-msgs{background:#FFF2E9;flex-direction:row;}
@@ -146,7 +142,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#532822;display:flex
 #s4{background:#3a1a14;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:56px;}
 .auto-lbl{font-size:11px;font-weight:700;color:rgba(255,242,233,.38);
   text-transform:uppercase;letter-spacing:.14em;align-self:flex-start;max-width:740px;width:100%;
-  opacity:0;animation:fuD .4s ease .1s forwards;}
+  opacity:0;transition:opacity .4s ease;}
+.auto-lbl.vis{opacity:1;}
 .a-toast{width:100%;max-width:740px;background:rgba(255,242,233,.06);
   border:1px solid rgba(255,242,233,.1);border-radius:14px;padding:18px 22px;
   display:flex;align-items:flex-start;gap:18px;opacity:0;transform:translateX(-20px);}
@@ -599,18 +596,27 @@ function addCard(c,html){const d=document.createElement('div');d.className='ai-a
 async function scene1(){
   show('s1');
   document.getElementById('bz').classList.remove('on');
-  document.querySelectorAll('.b-card,.b-greet').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+  // Reset all to invisible
+  document.querySelectorAll('.b-card,.b-greet').forEach(el=>el.classList.remove('vis'));
   clrC();
   cur.style.transition='none';cur.style.left='550px';cur.style.top='520px';
-  await W(100);cur.style.transition='';await W(1800);
+  await W(50);cur.style.transition='';
 
+  // Stagger cards in via .vis
+  const greet=document.querySelector('.b-greet');
   const cards=document.querySelectorAll('.b-card');
+  await W(200);greet.classList.add('vis');
+  await W(250);cards[0].classList.add('vis');
+  await W(200);cards[1].classList.add('vis');
+  await W(200);cards[2].classList.add('vis');
+  await W(200);cards[3].classList.add('vis');
+  await W(400);
+
   await mov(260,295,650);hov(cards[0],true);await W(700);hov(cards[0],false);
   await mov(560,295,450);hov(cards[1],true);await W(700);hov(cards[1],false);
 
   setC('Start every day knowing exactly where you stand.');
   await W(800);
-  // Zoom into Unread Messages card
   document.getElementById('bz').classList.add('on');
   await W(2800);clrC();
 }
@@ -692,17 +698,24 @@ async function scene4(){
   show('s4');
   ['at1','at2','at3'].forEach(id=>{
     const el=document.getElementById(id);
-    el.classList.remove('show');el.style.opacity='0';el.style.transform='translateX(-20px)';
+    el.classList.remove('show');
+    el.style.animation='none';
+    el.style.opacity='0';
+    el.style.transform='translateX(-20px)';
+    el.offsetHeight; // force reflow so animation can restart
+    el.style.animation='';
   });
   const lbl=document.querySelector('.auto-lbl');
-  lbl.style.animation='none';lbl.offsetHeight;lbl.style.animation='';
+  lbl.classList.remove('vis');
   clrC();
   cur.style.transition='none';cur.style.left='550px';cur.style.top='650px';
-  await W(100);cur.style.transition='';await W(700);
+  await W(50);cur.style.transition='';await W(400);
+  lbl.classList.add('vis');
+  await W(300);
 
   for(let i=1;i<=3;i++){
     const el=document.getElementById('at'+i);
-    el.style.animation='none';el.offsetHeight;el.classList.add('show');
+    el.classList.add('show');
     await W(1700);
   }
   setC('Set it once. Let Kiki handle the rest.');
