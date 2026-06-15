@@ -4,14 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Getting Started with Kiki</title>
-<link href="https://fonts.googleapis.com/css2?family=Gupter:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --brown: #532822;
     --cream: #FFF2E9;
     --yellow: #FFD05D;
-    --brown-light: #7a3f35;
-    --brown-dark: #3a1c18;
+    --green: #44A574;
+    --brown-mid: rgba(83,40,34,0.5);
+    --brown-faint: rgba(83,40,34,0.07);
+    --brown-border: rgba(83,40,34,0.12);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,183 +23,157 @@
     background: var(--cream);
     color: var(--brown);
     min-height: 100vh;
+    font-size: 15px;
   }
 
-  header {
-    background: var(--brown);
-    padding: 24px 40px;
+  /* ── Header ── */
+  .page-header {
+    background: white;
+    border-bottom: 1px solid var(--brown-border);
+    padding: 20px 32px;
     display: flex;
-    align-items: center;
-    gap: 16px;
+    align-items: baseline;
+    gap: 12px;
   }
 
-  header img {
-    height: 36px;
-    filter: brightness(0) invert(1) sepia(1) saturate(2) hue-rotate(10deg) brightness(1.3);
-  }
-
-  header h1 {
-    font-family: 'Gupter', serif;
-    color: var(--cream);
-    font-size: 22px;
-    font-weight: 500;
-  }
-
-  .hero {
-    background: var(--brown);
-    padding: 48px 40px 64px;
-    text-align: center;
-  }
-
-  .hero h2 {
-    font-family: 'Gupter', serif;
-    color: var(--cream);
-    font-size: 36px;
+  .page-header h1 {
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 12px;
-  }
-
-  .hero p {
-    color: rgba(255,242,233,0.75);
-    font-size: 16px;
-    max-width: 520px;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
-
-  .usp-bar {
-    background: var(--yellow);
-    padding: 20px 40px;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-  }
-
-  .usp-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
     color: var(--brown);
   }
 
-  .usp-item svg {
-    width: 18px;
-    height: 18px;
+  .page-header span {
+    font-size: 14px;
+    color: var(--brown-mid);
+    font-weight: 500;
   }
 
+  /* ── Layout ── */
   .container {
-    max-width: 760px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 48px 24px;
+    padding: 40px 24px 64px;
   }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--brown-light);
-    margin-bottom: 24px;
+  /* ── Progress ── */
+  .progress-wrap {
+    margin-bottom: 36px;
   }
 
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-meta span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--brown-mid);
+  }
+
+  .progress-track {
+    height: 6px;
+    background: var(--brown-faint);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Steps ── */
   .step {
     background: white;
-    border-radius: 16px;
-    padding: 28px 32px;
-    margin-bottom: 16px;
-    border: 1.5px solid rgba(83,40,34,0.08);
+    border: 1.5px solid var(--brown-border);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
     cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    position: relative;
   }
 
   .step:hover {
-    border-color: rgba(83,40,34,0.2);
-    box-shadow: 0 4px 16px rgba(83,40,34,0.08);
+    border-color: rgba(83,40,34,0.25);
   }
 
   .step.done {
-    border-color: #44A574;
-    background: #f0faf5;
+    border-color: var(--green);
+    background: #f5fcf8;
   }
 
   .step-header {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
+    padding: 20px 22px;
   }
 
-  .step-number {
-    width: 36px;
-    height: 36px;
+  .step-num {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: var(--cream);
     border: 2px solid var(--brown);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 13px;
     font-weight: 700;
-    font-size: 14px;
     color: var(--brown);
     flex-shrink: 0;
     transition: all 0.2s;
   }
 
-  .step.done .step-number {
-    background: #44A574;
-    border-color: #44A574;
+  .step.done .step-num {
+    background: var(--green);
+    border-color: var(--green);
     color: white;
+    font-size: 0;
   }
 
-  .step.done .step-number::after {
+  .step.done .step-num::after {
     content: '✓';
+    font-size: 14px;
   }
 
-  .step.done .step-number span {
-    display: none;
-  }
-
-  .step-title {
+  .step-meta {
     flex: 1;
   }
 
-  .step-title h3 {
-    font-family: 'Gupter', serif;
-    font-size: 18px;
+  .step-meta h3 {
+    font-size: 15px;
     font-weight: 700;
     color: var(--brown);
     margin-bottom: 2px;
   }
 
-  .step-title p {
+  .step-meta p {
     font-size: 13px;
-    color: var(--brown-light);
+    color: var(--brown-mid);
   }
 
-  .step-toggle {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(83,40,34,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .step-chevron {
+    color: var(--brown-mid);
     transition: transform 0.2s;
-    color: var(--brown);
+    flex-shrink: 0;
   }
 
-  .step.open .step-toggle {
+  .step.open .step-chevron {
     transform: rotate(180deg);
   }
 
+  /* ── Step body ── */
   .step-body {
     display: none;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(83,40,34,0.08);
+    padding: 0 22px 22px;
+    border-top: 1px solid var(--brown-border);
+    margin-top: 0;
   }
 
   .step.open .step-body {
@@ -205,45 +181,45 @@
   }
 
   .step-body ol {
-    padding-left: 20px;
+    padding: 18px 0 0 18px;
     margin-bottom: 16px;
   }
 
   .step-body ol li {
     font-size: 14px;
-    line-height: 1.7;
+    line-height: 1.75;
     color: #444;
     margin-bottom: 6px;
   }
 
   .step-body ol li strong {
     color: var(--brown);
+    font-weight: 600;
   }
 
-  .step-body .note {
+  .step-body ol li a {
+    color: var(--brown);
+    font-weight: 600;
+  }
+
+  .note {
     background: var(--cream);
     border-left: 3px solid var(--yellow);
     padding: 12px 16px;
     border-radius: 0 8px 8px 0;
     font-size: 13px;
     color: var(--brown);
-    margin-top: 12px;
+    line-height: 1.6;
+    margin-top: 4px;
+    margin-bottom: 16px;
   }
 
-  .step-body .code {
-    background: #f5f0ee;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-family: monospace;
-    font-size: 13px;
-    color: var(--brown);
-    margin: 8px 0;
-    word-break: break-all;
+  .note + .note {
+    margin-top: 8px;
   }
 
-  .mark-done-btn {
-    margin-top: 16px;
-    padding: 10px 20px;
+  .done-btn {
+    padding: 9px 18px;
     background: var(--brown);
     color: var(--cream);
     border: none;
@@ -252,250 +228,195 @@
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: opacity 0.2s;
+    margin-top: 4px;
   }
 
-  .mark-done-btn:hover {
-    background: var(--brown-dark);
+  .done-btn:hover { opacity: 0.85; }
+
+  .step.done .done-btn {
+    background: var(--green);
   }
 
-  .step.done .mark-done-btn {
-    background: #44A574;
-  }
-
-  .progress-bar-wrap {
-    background: rgba(83,40,34,0.1);
-    border-radius: 99px;
-    height: 8px;
-    margin-bottom: 32px;
-    overflow: hidden;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background: #44A574;
-    border-radius: 99px;
-    transition: width 0.4s ease;
-    width: 0%;
-  }
-
-  .progress-label {
-    font-size: 13px;
-    color: var(--brown-light);
-    margin-bottom: 8px;
-    font-weight: 600;
-  }
-
-  .channel-chips {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin: 12px 0;
-  }
-
-  .chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 99px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .chip.slack { background: #4A154B; color: white; }
-  .chip.whatsapp { background: #25D366; color: white; }
-  .chip.email { background: var(--yellow); color: var(--brown); }
-
+  /* ── All done ── */
   .all-done {
     display: none;
     text-align: center;
-    padding: 40px;
+    padding: 36px;
     background: white;
-    border-radius: 16px;
-    border: 2px solid #44A574;
-    margin-top: 24px;
+    border-radius: 14px;
+    border: 2px solid var(--green);
+    margin-top: 16px;
   }
 
-  .all-done.visible {
-    display: block;
-  }
+  .all-done.visible { display: block; }
+
+  .all-done .emoji { font-size: 36px; margin-bottom: 12px; }
 
   .all-done h3 {
-    font-family: 'Gupter', serif;
-    font-size: 24px;
+    font-size: 18px;
+    font-weight: 700;
     color: var(--brown);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .all-done p {
-    color: var(--brown-light);
     font-size: 14px;
+    color: var(--brown-mid);
   }
 
-  .all-done .emoji {
-    font-size: 40px;
+  /* ── Section divider ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brown-mid);
     margin-bottom: 16px;
   }
 </style>
 </head>
 <body>
 
-<header>
-  <img src="https://framerusercontent.com/images/PvcRYxRDwRq0BXQ4YbIEpPBFsA.svg?width=531&height=141" alt="Kiki">
+<div class="page-header">
   <h1>Getting Started</h1>
-</header>
-
-<div class="hero">
-  <h2>Welcome to Kiki 👋</h2>
-  <p>Kiki brings all your client conversations into one place. No more switching between Slack, WhatsApp, and email, everything lives in your Kiki inbox.</p>
-</div>
-
-<div class="usp-bar">
-  <div class="usp-item">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    Slack & WhatsApp in one inbox
-  </div>
-  <div class="usp-item">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Reply without switching apps
-  </div>
-  <div class="usp-item">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    Every client, one contact record
-  </div>
+  <span>Follow these steps to set up your Kiki account</span>
 </div>
 
 <div class="container">
 
-  <div class="progress-label" id="progress-label">0 of 4 steps completed</div>
-  <div class="progress-bar-wrap">
-    <div class="progress-bar" id="progress-bar"></div>
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="progress-label">0 of 5 steps completed</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
   </div>
 
-  <div class="section-label">Setup Checklist</div>
+  <div class="section-label">Setup checklist</div>
 
-  <!-- Step 1 -->
-  <div class="step" id="step-1" onclick="toggleStep('step-1')">
+  <!-- Step 1: Install Kiki -->
+  <div class="step open" id="step-1" onclick="toggleStep('step-1')">
     <div class="step-header">
-      <div class="step-number"><span>1</span></div>
-      <div class="step-title">
-        <h3>Connect Slack</h3>
-        <p>Link your Slack workspace so client messages flow into Kiki</p>
+      <div class="step-num">1</div>
+      <div class="step-meta">
+        <h3>Install Kiki</h3>
+        <p>Connect your account so Kiki can access your data</p>
       </div>
-      <div class="step-toggle">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
+      <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="step-body">
       <ol>
-        <li><a id="slack-install-link" href="#" target="_blank" style="color: var(--brown); font-weight: 600;">Click here to connect Slack</a> — you'll be taken to Slack to authorise Kiki</li>
-        <li>Find <strong>Slack</strong> and click <strong>Connect</strong></li>
-        <li>Sign in to your Slack workspace and authorise Kiki</li>
+        <li>Open the Kiki install link sent to you by your account manager</li>
+        <li>Select your sub-account from the dropdown</li>
+        <li>Click <strong>Allow &amp; Install</strong></li>
         <li>You'll be redirected back to Kiki once connected</li>
       </ol>
-      <div class="note">💡 Kiki needs access to your Slack workspace to read and send messages on your behalf. Your clients will see messages from you, not from a bot.</div>
-      <button class="mark-done-btn" onclick="markDone(event, 'step-1')">Mark as done</button>
+      <div class="note">This step authorises Kiki to access your conversations, contacts, calendar, invoices, and email. You only need to do this once.</div>
+      <button class="done-btn" onclick="markDone(event, 'step-1')">Mark as done</button>
     </div>
   </div>
 
-  <!-- Step 2 -->
+  <!-- Step 2: Connect Slack -->
   <div class="step" id="step-2" onclick="toggleStep('step-2')">
     <div class="step-header">
-      <div class="step-number"><span>2</span></div>
-      <div class="step-title">
-        <h3>Add Kiki to a Slack Channel</h3>
-        <p>Invite the Kiki bot to each client channel you want to manage</p>
+      <div class="step-num">2</div>
+      <div class="step-meta">
+        <h3>Connect Slack</h3>
+        <p>Link your Slack workspace so client messages appear in Kiki</p>
       </div>
-      <div class="step-toggle">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
+      <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="step-body">
       <ol>
-        <li>Open the Slack channel you use with a client</li>
-        <li>Type <strong>/invite @Kiki</strong> and press enter</li>
-        <li>Kiki will send you a <strong>direct message</strong> with a link to link the channel to a contact</li>
-        <li>Click the link, select the client contact from the list, and click <strong>Link Channel</strong></li>
+        <li><a id="slack-install-link" href="#" target="_blank" onclick="event.stopPropagation()">Click here to connect Slack</a> — you'll be taken to Slack to authorise Kiki</li>
+        <li>Sign in to your Slack workspace and click <strong>Allow</strong></li>
+        <li>You'll be redirected back to Kiki once connected</li>
       </ol>
-      <div class="note">📌 Repeat this for every client channel you want to manage inside Kiki. Each channel maps to one contact.</div>
-      <button class="mark-done-btn" onclick="markDone(event, 'step-2')">Mark as done</button>
+      <div class="note">Kiki needs access to your Slack workspace to read and send messages. Your clients will see messages from you, not a bot.</div>
+      <button class="done-btn" onclick="markDone(event, 'step-2')">Mark as done</button>
     </div>
   </div>
 
-  <!-- Step 3 -->
+  <!-- Step 3: Add Kiki to client channels -->
   <div class="step" id="step-3" onclick="toggleStep('step-3')">
     <div class="step-header">
-      <div class="step-number"><span>3</span></div>
-      <div class="step-title">
-        <h3>Connect WhatsApp</h3>
-        <p>Add your WhatsApp Business number to receive messages in Kiki</p>
+      <div class="step-num">3</div>
+      <div class="step-meta">
+        <h3>Add Kiki to your client channels</h3>
+        <p>Invite the Kiki bot to each Slack channel you want to manage</p>
       </div>
-      <div class="step-toggle">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
+      <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="step-body">
       <ol>
-        <li>Go to <strong>Settings → Phone System → WhatsApp</strong></li>
-        <li>Click <strong>Connect WhatsApp</strong></li>
-        <li>Follow the steps to verify your WhatsApp Business number</li>
-        <li>Once connected, messages from WhatsApp will appear in your <strong>Conversations</strong> inbox</li>
+        <li>Open the Slack channel you share with a client</li>
+        <li>Type <strong>/invite @Kiki</strong> and press Enter</li>
+        <li>Kiki will send you a direct message with a link to link the channel to a contact</li>
+        <li>Click the link, find the client in the list, and click <strong>Link Channel</strong></li>
       </ol>
-      <div class="note">💬 WhatsApp messages are handled natively by Kiki. No extra setup needed once connected.</div>
-      <button class="mark-done-btn" onclick="markDone(event, 'step-3')">Mark as done</button>
+      <div class="note">Repeat this for every client channel. Each channel links to one contact record.</div>
+      <button class="done-btn" onclick="markDone(event, 'step-3')">Mark as done</button>
     </div>
   </div>
 
-  <!-- Step 4 -->
+  <!-- Step 4: Set up email sending -->
   <div class="step" id="step-4" onclick="toggleStep('step-4')">
     <div class="step-header">
-      <div class="step-number"><span>4</span></div>
-      <div class="step-title">
-        <h3>Send Your First Message</h3>
-        <p>Reply to a client from Kiki across any channel</p>
+      <div class="step-num">4</div>
+      <div class="step-meta">
+        <h3>Set up your sending email</h3>
+        <p>Connect your own domain so emails land in inboxes, not spam</p>
       </div>
-      <div class="step-toggle">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
+      <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="step-body">
-      <p style="font-size:14px; margin-bottom:12px; color:#444; line-height:1.6;">You can now message clients from within Kiki across all connected channels.</p>
-      <div class="channel-chips">
-        <div class="chip slack">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zm10.122 2.521a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zm-1.268 0a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zm-2.523 10.122a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zm0-1.268a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
-          Slack
-        </div>
-        <div class="chip whatsapp">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          WhatsApp
-        </div>
-        <div class="chip email">✉️ Email</div>
-      </div>
       <ol>
-        <li>Go to <strong>Conversations</strong> in the left sidebar</li>
-        <li>Find the contact you want to message</li>
-        <li>To message via Slack, click the <strong>email dropdown</strong> at the bottom and select <strong>Slack</strong>, then choose the channel</li>
-        <li>Type your message and hit send. It'll arrive in Slack as a message from you</li>
-        <li>For WhatsApp and email, just use the standard message composer</li>
+        <li>Go to <strong>Settings &rarr; Email Services</strong></li>
+        <li>Click <strong>Add Sending Domain</strong> and enter your domain (e.g. mail.yourbusiness.com)</li>
+        <li>Add the DNS records shown to your domain provider and click <strong>Verify</strong></li>
+        <li>Once verified, set it as your default sending domain</li>
       </ol>
-      <div class="note">✨ When a client replies on Slack or WhatsApp, it automatically appears in your Kiki inbox as a new message. No switching apps needed.</div>
-      <button class="mark-done-btn" onclick="markDone(event, 'step-4')">Mark as done</button>
+      <div class="note">We strongly recommend connecting your own domain. Until you do, emails will send from <strong>slack.wearekiki.com</strong> which may land in junk folders while the domain warms up.</div>
+      <div class="note">If you don't have a custom domain yet, contact us and we can set up a dedicated Kiki subdomain for you.</div>
+      <button class="done-btn" onclick="markDone(event, 'step-4')">Mark as done</button>
+    </div>
+  </div>
+
+  <!-- Step 5: Invite your team -->
+  <div class="step" id="step-5" onclick="toggleStep('step-5')">
+    <div class="step-header">
+      <div class="step-num">5</div>
+      <div class="step-meta">
+        <h3>Invite your team</h3>
+        <p>Give your team access so they can manage conversations too</p>
+      </div>
+      <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="step-body">
+      <ol>
+        <li>Go to <strong>Settings &rarr; My Staff</strong></li>
+        <li>Click <strong>Add Employee</strong> and enter their name and email</li>
+        <li>Set their role and click <strong>Save</strong></li>
+        <li>They'll receive a login invite via email</li>
+      </ol>
+      <div class="note">Each team member gets their own login. You can control what they can see and do from their role settings.</div>
+      <button class="done-btn" onclick="markDone(event, 'step-5')">Mark as done</button>
     </div>
   </div>
 
   <div class="all-done" id="all-done">
     <div class="emoji">🎉</div>
-    <h3>You're all set!</h3>
-    <p>Kiki is ready to go. Head to Conversations to start managing your client messages.</p>
+    <h3>You're all set</h3>
+    <p>Kiki is ready to go. Head to Messages to start managing your client conversations.</p>
   </div>
 
 </div>
 
 <script>
-  const totalSteps = 4;
+  const TOTAL = 5;
 
-  // Set Slack install link with locationId from URL
   const params = new URLSearchParams(window.location.search);
   const locationId = params.get('locationId') || '';
   document.getElementById('slack-install-link').href =
@@ -518,15 +439,11 @@
 
   function updateProgress() {
     const done = document.querySelectorAll('.step.done').length;
-    const pct = (done / totalSteps) * 100;
-    document.getElementById('progress-bar').style.width = pct + '%';
-    document.getElementById('progress-label').textContent = `${done} of ${totalSteps} steps completed`;
-    document.getElementById('all-done').classList.toggle('visible', done === totalSteps);
+    const pct = (done / TOTAL) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = `${done} of ${TOTAL} steps completed`;
+    document.getElementById('all-done').classList.toggle('visible', done === TOTAL);
   }
-
-  // Open first step by default
-  document.getElementById('step-1').classList.add('open');
 </script>
-
 </body>
 </html>
